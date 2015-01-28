@@ -79,7 +79,9 @@ function process(){
     }
     if(isAlimamaHomePage(url)){
         if(!hasAlimamaLogin()){
-            loginToAlimamaByTaobao();
+            getTaobaologinURL();
+        } else {
+            getURL();
         }
     }
     if(isTaobaoLoginURL(url)){
@@ -173,10 +175,21 @@ function loginToAlimamaByTaobao(){
     window.location.href = 'http://www.alimama.com/index.htm';
 }
 
+function getTaobaologinURL () {
+    // document.getElementById('J_menu_login').click();
+    window.location.href = 'https://login.taobao.com/member/login.jhtml?style=minisimple&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true&disableQuickLogin=true';
+}
+
 function getURL () {
-    
+    debug('reday to get the url');
 }
 
 function doLogin(){
-
+    document.getElementById('TPL_username_1').value = window.dstbk.username;
+    document.getElementById('TPL_password_1').value = window.dstbk.password;
+    if(document.getElementById('J_CodeInput_i')){
+        alert('需要手动输入验证码');
+        return false;
+    }
+    document.getElementById('J_StaticForm').submit();
 }
