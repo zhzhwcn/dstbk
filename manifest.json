@@ -1,0 +1,21 @@
+{
+	"background": {
+		"scripts": [ "js/background.js" ]
+	},
+	"description": "再买剁手 -- 千手观音",
+	"manifest_version": 2,
+	"name": "剁手淘宝客",
+	"options_page": "html/options.html",
+	"permissions": ["tabs"],
+	"content_scripts": [{
+		"all_frames": false,
+		"exclude_globs": [ ],
+		"include_globs": [ ],
+		"js": [ "lib/sizzle.min.js", "js/functions.js", "js/document_end.js" ],
+		"matches": [ "http://*.taobao.com/*", "http://*.tmall.com/*", "http://*.alimama.com/*", "https://*.taobao.com/*", "https://*.tmall.com/*", "https://*.alimama.com/*" ],
+		"run_at": "document_end"
+	}],
+	"update_url": "https://clients2.google.com/service/update2/crx",
+	"version": "0.0.5",
+	"web_accessible_resources": [ "lib/sizzle.min.map", "lib/sizzle.js" ]
+}
