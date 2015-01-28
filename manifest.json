@@ -11,11 +11,11 @@
 		"all_frames": false,
 		"exclude_globs": [ ],
 		"include_globs": [ ],
-		"js": [ "lib/sizzle.min.js", "js/functions.js", "js/document_end.js" ],
+		"js": [ "lib/jquery.min.js", "js/functions.js", "js/document_end.js" ],
 		"matches": [ "http://*.taobao.com/*", "http://*.tmall.com/*", "http://*.alimama.com/*", "https://*.taobao.com/*", "https://*.tmall.com/*", "https://*.alimama.com/*" ],
 		"run_at": "document_end"
 	}],
 	"update_url": "https://clients2.google.com/service/update2/crx",
 	"version": "0.0.5",
-	"web_accessible_resources": [ "lib/sizzle.min.map", "lib/sizzle.js" ]
+	"web_accessible_resources": [ ]
 }
