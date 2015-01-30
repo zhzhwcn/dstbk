@@ -78,11 +78,7 @@ function process(){
         }
     }
     if(isAlimamaHomePage(url)){
-        if(!hasAlimamaLogin()){
-            getTaobaologinURL();
-        } else {
-            getURL();
-        }
+        checkAlimamaLogin();
     }
     if(isTaobaoLoginURL(url)){
         doLogin();
@@ -159,15 +155,24 @@ function isTaobaoLoginURL(url){
     return url.indexOf('login.taobao.com/member/login.jhtml') !== -1;
 }
 
-function hasAlimamaLogin(){
+function checkAlimamaLogin(){
     debug('checking login status');
-    var login_span = document.getElementById('J_menu_username_span');
-    if(login_span && login_span.innerHTML === '你好'){
-        addToGlobal('login', false);
-        return false;
-    }
-    addToGlobal('login', true);
-    return true;
+    $.ajax({
+        url:'http://www.alimama.com/getLogInfo.htm',
+        jsonp:'callback',
+        dataType: "jsonp",
+        success: function(result){
+            debug('get login result');
+            debug(result);
+            return;
+            if(result.indexOf('success') !== -1){
+                addToGlobal('login', true);
+                getURL();
+            } else {
+                addToGlobal('login', false);
+            }
+        }
+    });
 }
 
 function loginToAlimamaByTaobao(){
