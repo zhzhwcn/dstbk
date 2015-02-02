@@ -65,6 +65,7 @@ function process(){
     if(window.dstbk.finished === 'finished'){
         return ;
     }
+    checkAlimamaLogin();
     
     addToGlobal('finished', '');
     addToGlobal('process', 'processing');
@@ -77,11 +78,11 @@ function process(){
             getURL();
         }
     }
-    if(isAlimamaHomePage(url)){
-        checkAlimamaLogin();
-    }
     if(isTaobaoLoginURL(url)){
         doLogin();
+    }
+    if(window.dstbk.login){
+        getURL();
     }
 }
 
@@ -186,6 +187,14 @@ function getTaobaologinURL () {
 
 function getURL () {
     debug('reday to get the url');
+    $.get('http://pub.alimama.com/pubauc/searchAuctionList.json?q=' + encodeURIComponent(window.dstbk.itemURL),function(data){
+        if(data.data.paginator.items == 0){
+            gotURL(window.dstbk.itemURL,0,0);
+            window.location.href = window.dstbk.itemURL;
+        } else {
+
+        }
+    },'json');
 }
 
 function doLogin(){
@@ -200,4 +209,12 @@ function doLogin(){
         return false;
     }
     document.getElementById('J_StaticForm').submit();
+}
+
+function gotURL(url,rate,money){
+    addToGlobal('finished', 'finished');
+    addToGlobal('process', '');
+    addToGlobal('clickurl', url);
+    addToGlobal('rate', rate);
+    addToGlobal('money', money);
 }

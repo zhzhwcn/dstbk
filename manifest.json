@@ -6,7 +6,7 @@
 	"manifest_version": 2,
 	"name": "剁手淘宝客",
 	"options_page": "html/options.html",
-	"permissions": ["cookies", "tabs", "http://*.alimama.com/*", "https://*.alimama.com/*"],
+	"permissions": ["cookies", "tabs", "*://*.alimama.com/*"],
 	"content_scripts": [{
 		"all_frames": false,
 		"exclude_globs": [ ],
