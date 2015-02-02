@@ -163,13 +163,12 @@ function checkAlimamaLogin(){
         dataType: "jsonp",
         success: function(result){
             debug('get login result');
-            debug(result);
-            return;
-            if(result.indexOf('success') !== -1){
+            if(result.success){
                 addToGlobal('login', true);
                 getURL();
             } else {
                 addToGlobal('login', false);
+                getTaobaologinURL();
             }
         }
     });
@@ -190,9 +189,13 @@ function getURL () {
 }
 
 function doLogin(){
+    if(!document.getElementById('TPL_username_1')){
+        // redirecting ...
+        return ;
+    }
     document.getElementById('TPL_username_1').value = window.dstbk.username;
     document.getElementById('TPL_password_1').value = window.dstbk.password;
-    if(document.getElementById('J_CodeInput_i')){
+    if($('#J_CodeInput_i').is('visible')){
         alert('需要手动输入验证码');
         return false;
     }
