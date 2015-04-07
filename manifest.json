@@ -11,7 +11,7 @@
 		"all_frames": false,
 		"exclude_globs": [ ],
 		"include_globs": [ ],
-		"js": [ "lib/jquery.min.js", "js/functions.js", "js/document_end.js" ],
+		"js": [ "lib/message.js", "lib/jquery.min.js", "js/functions.js", "js/document_end.js" ],
 		"matches": [ "http://*.taobao.com/*", "http://*.tmall.com/*", "http://*.alimama.com/*", "https://*.taobao.com/*", "https://*.tmall.com/*", "https://*.alimama.com/*" ],
 		"run_at": "document_end"
 	}],

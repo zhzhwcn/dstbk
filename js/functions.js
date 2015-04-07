@@ -35,6 +35,14 @@ function initGlobal(){
         }
         debug('Done Init Globals');
         debug(window.dstbk);
+        if(isItemURL(window.location.href)){
+            MSG.onMsg('GlobalsInitDone',initButton);
+        }
+        MSG.broadCast('GlobalsInitDone');
+        //initButton();
+        if(window.dstbk.process !== undefined && window.dstbk.process !== ''){
+            process();
+        }
     });
     
 }
@@ -56,33 +64,40 @@ function initButton(){
         span.innerHTML = '已开启的佣金为: ' + window.dstbk.result;
         btn.style.display = 'none';
     }
+    addToGlobal('finished', '');
+    addToGlobal('process', '');
     div.appendChild(btn);
     div.appendChild(span);
     document.getElementById('J_isku').appendChild(div);
+    MSG.broadCast('ButtonInitDone');
 }
 
 function process(){
     if(window.dstbk.finished === 'finished'){
         return ;
     }
-    checkAlimamaLogin();
-    
+
     addToGlobal('finished', '');
     addToGlobal('process', 'processing');
-    var url = window.location.href;
-    if(isItemURL(url)){
-        addToGlobal('itemURL', url);
-        if(!window.dstbk.login){
-            loginToAlimamaByTaobao();
-        } else {
-            getURL();
-        }
+
+    if(isItemURL(window.location.href)){
+        MSG.onMsgOnce('addToGlobalDone',loginToAlimamaByTaobao);
+        addToGlobal('itemURL', window.location.href);
+        //loginToAlimamaByTaobao();
     }
-    if(isTaobaoLoginURL(url)){
+    if(isAlimamaHomePage(window.location.href)){
+        MSG.onMsg('checkAlimamaLoginDone',function(){
+            var url = window.location.href;
+            if(window.dstbk.login){
+                getURL();
+            } else {
+                getTaobaologinURL();
+            }
+        });
+        checkAlimamaLogin();
+    }
+    if(isTaobaoLoginURL(window.location.href)){
         doLogin();
-    }
-    if(window.dstbk.login){
-        getURL();
     }
 }
 
@@ -111,7 +126,7 @@ function addToGlobal(name, value){
     localStorage.setItem(name, value);
     debug('Setting To Ext Settings')
     chrome.runtime.sendMessage({'method': "setSettings",'data': window.dstbk}, function(response) {
-
+        MSG.broadCast('addToGlobalDone');
     });
 }
 
@@ -136,6 +151,9 @@ function getSettings(){
 }
 
 function getCached(){
+    if(window.dstbk.cache === undefined || window.dstbk.queryObject === undefined){
+        return false;
+    }
     if(window.dstbk.cache[window.dstbk.queryObject.id] === undefined){
         return false;
     }
@@ -166,10 +184,12 @@ function checkAlimamaLogin(){
             debug('get login result');
             if(result.success){
                 addToGlobal('login', true);
-                getURL();
+                //getURL();
+                MSG.broadCast('checkAlimamaLoginDone');
             } else {
                 addToGlobal('login', false);
-                getTaobaologinURL();
+                //getTaobaologinURL();
+                MSG.broadCast('checkAlimamaLoginDone');
             }
         }
     });
@@ -194,6 +214,7 @@ function getURL () {
         } else {
 
         }
+        MSG.broadCast('getURLDone');
     },'json');
 }
 
@@ -202,13 +223,21 @@ function doLogin(){
         // redirecting ...
         return ;
     }
+    
     document.getElementById('TPL_username_1').value = window.dstbk.username;
     document.getElementById('TPL_password_1').value = window.dstbk.password;
-    if($('#J_CodeInput_i').is('visible')){
-        alert('需要手动输入验证码');
-        return false;
-    }
-    document.getElementById('J_StaticForm').submit();
+    // UA is FAKE
+    $.post('https://login.taobao.com/member/request_nick_check.do?_input_charset=utf-8',{
+        username:window.dstbk.username,
+        ua:'092UW5TcyMNYQwiAiwZTXFIdUh1SHJOe0BuOG4=|Um5Ockt0QXhFeEN5THhDey0=|U2xMHDJ7G2AHYg8hAS8WKgQkClY3UT1aJF5wJnA=|VGhXd1llXGNWb1JvVG5bb1RsW2ZEcEhwT3RIdUtyS3RMckt+UAY=|VWldfS0RMQQ6ACAcJgYoRClvEnQsQSBEL0JpSXBQbElnMWc=|VmNDbUMV|V2NDbUMV|WGRYeCgGZhtmH2VScVI2UT5fORtmD2gCawwuRSJHZAFsCWMOdVYyVTpbPR99HWAFYVMpVCRALR14GX8eZAVgGX0QOlQvSC0ddBBxFH0YcVsgTSFAO1Y9QB5HATFRLFEoAT4GOHNaZV1iLgc4AD9zF3Affhg6Ry5JI0otD2QDZk9wSHc7XjNWPFEqAzwEO3cKYwRuB2ADbkd4QH8zVzBfPlh6GmcCKxQsEl4/RRF1En0celNsVGoGOhB+AmYCVi1ALE02WzBNfQB7B2pALE03XjRQPWcbehFyNFM8XTsLdg1xHDISPBJEEg==|WWdHFyoKNxcrEisWNg81DS0RKBEsDDgFOBgkHSQZOQw3ClwK|WmZYeCgGWjtdMVYoUn5LaVV7W3Upai4CPgQkGTkEJBgmHzFnMQ==|W2daelQEPQU7G0xiXmdYbVRpVG9UaVZsUSQZOwQ9BjIIMgw0CzYMMAgwDjcNWnRUaD4QRg==|XGVYZUV4WGdHe0J+XmBYYkJ6Tm5UbExwTHVVaUl1TnNTZ1oM'
+    },function(data){
+        if(data.needcode){
+            alert('请手动输入验证码');
+            return false;
+        } else {
+            //document.getElementById('J_StaticForm').submit();
+        }
+    },'json');
 }
 
 function gotURL(url,rate,money){

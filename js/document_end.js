@@ -1,6 +1,3 @@
-setDebug(true);
+setDebug(false);
+MSG = Message;
 initGlobal();
-initButton();
-if(window.dstbk.process !== undefined && window.dstbk.process !== ''){
-	process();
-}
